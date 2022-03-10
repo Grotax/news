@@ -108,6 +108,7 @@ jobs:
         working-directory: ../server
         run: |
           php -S localhost:8080 &
+          sleep 5
 
           echo "++++curl news+++"
           curl -u admin:admin http://localhost:8080/index.php/apps/news/api/v1-2/folders
