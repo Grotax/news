@@ -104,31 +104,13 @@ jobs:
           check-code: true
           force: ${{ matrix.experimental }}
 
-      - name: Set up apache webserver
-        run: |
-          # Copy nextcloud config over existing apache config
-          sudo cp tests/integration/helpers/000-default.conf /etc/apache2/sites-available/000-default.conf
-          
-          # Change permissions, bats tests will fail after this
-          sudo chown -R www-data:www-data /home/runner/work/news/server
-          
-          # Enable required mods and php config
-          sudo a2enmod rewrite
-          sudo a2enmod headers
-          sudo a2enmod proxy_fcgi
-          sudo a2enconf php${{ matrix.php-versions }}-fpm.conf
-          sudo a2enmod mpm_event
-          
-          # Start php and apache
-          sudo systemctl start php${{ matrix.php-versions }}-fpm
-          sudo systemctl status php${{ matrix.php-versions }}-fpm
-          sudo systemctl start apache2
-          sudo systemctl status apache2
-        
       - name: run api test
+        working-directory: ../server
         run: |
+          php -S localhost:8080 &
+
           echo "++++curl news+++"
-          curl -u admin:admin http://localhost/index.php/apps/news/api/v1-2/folders
+          curl -u admin:admin http://localhost:8080/index.php/apps/news/api/v1-2/folders
 
           cat /var/log/apache2/error.log
 
