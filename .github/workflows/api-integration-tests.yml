@@ -103,26 +103,6 @@ jobs:
           app: 'news'
           check-code: true
           force: ${{ matrix.experimental }}
-      
-      - name: Setup problem matchers for PHP
-        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-
-      - name: Functional tests maintenance
-        working-directory: ../server
-        run: |
-          ./occ maintenance:repair
-
-      - name: Functional tests
-        working-directory: ../server
-        run: bats apps/news/tests/integration
-
-      - name: Prep PHP tests
-        working-directory: ../server/apps/news
-        run: make php-test-dependencies
-
-      - name: Feed tests
-        working-directory: ../server/apps/news
-        run: make feed-test
 
       - name: Set up apache webserver
         run: |
@@ -151,3 +131,24 @@ jobs:
           curl -u admin:admin http://localhost/index.php/apps/news/api/v1-2/folders
 
           cat /var/log/apache2/error.log
+
+      - name: Setup problem matchers for PHP
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+      - name: Functional tests maintenance
+        working-directory: ../server
+        run: |
+          ./occ maintenance:repair
+
+      - name: Functional tests
+        working-directory: ../server
+        run: bats apps/news/tests/integration
+
+      - name: Prep PHP tests
+        working-directory: ../server/apps/news
+        run: make php-test-dependencies
+
+      - name: Feed tests
+        working-directory: ../server/apps/news
+        run: make feed-test
+
